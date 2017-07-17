@@ -1,5 +1,9 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include "opencv2/core/utility.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
 #include <iostream>
 #include <Windows.h>
 
@@ -44,8 +48,8 @@ int main()
 	int total_count_none_correct = 0;
 	int total_count_none_all = 0;
 
-	for (string file : validation_files) {
-		pair<Mat, Mat> sample = Utils::read_complete_file(validation_folder, file);
+	for (string file : training_files) {
+		pair<Mat, Mat> sample = Utils::read_complete_file(training_folder, file);
 		Mat label = Utils::encode_label_image(sample.second);
 
 		int count_blue_correct = 0;
@@ -138,7 +142,9 @@ int main()
 
 		if (true) {
 			namedWindow("Display window original", WINDOW_NORMAL);
-			imshow("Display window original", sample.first);
+			Mat image;
+			cvtColor(sample.first, image, COLOR_RGB2BGR);
+			imshow("Display window original", image);
 			resizeWindow("Display window original", 600, 600);
 			namedWindow("Display window predicted", WINDOW_NORMAL);
 			imshow("Display window predicted", (255 / 3)*predicted_reduced);

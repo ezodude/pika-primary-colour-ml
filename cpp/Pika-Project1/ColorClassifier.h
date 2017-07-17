@@ -10,11 +10,10 @@ class ColorClassifier
 public:
 	ColorClassifier(const std::string& load_from_object);
 	inline int compute_idx(const cv::Vec3b & pixel);
-	std::tuple<double, double, double, double> compute_percentage(const cv::Mat & patch, float alpha);
+	std::tuple<double, double, double, double> compute_percentage(const cv::Mat & patch);
 	bool is_blue(const cv::Mat & patch, float alpha);
 	bool is_red(const cv::Mat & patch, float alpha);
 	bool is_yellow(const cv::Mat & patch, float alpha);
-	ColorClassifier(const std::vector<std::string>& training_files);
 	~ColorClassifier();
 private:
 	std::vector<float> p_none;

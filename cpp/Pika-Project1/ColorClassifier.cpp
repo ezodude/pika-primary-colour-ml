@@ -75,6 +75,10 @@ ColorClassifier::ColorClassifier(const string& load_from_object)
 }
 
 inline int ColorClassifier::compute_idx(const cv::Vec3b& pixel) {
+	// We assume that a pixel stores the color in an RGB format. This
+	// allows up to compute the correct location for the lookup. 
+	// Mathematically we use first rescale the pixels to fit into our smaller
+	// space and then convert it into a new base.
 	int r, g, b;
 	r = pixel[0];
 	g = pixel[1];
@@ -83,7 +87,7 @@ inline int ColorClassifier::compute_idx(const cv::Vec3b& pixel) {
 }
 
 
-tuple<double, double, double, double> ColorClassifier::compute_percentage(const cv::Mat& patch, float alpha) {
+tuple<double, double, double, double> ColorClassifier::compute_percentage(const cv::Mat& patch) {
 	double acc_p_none = 0;
 	double acc_p_blue = 0;
 	double acc_p_red = 0;
@@ -99,40 +103,34 @@ tuple<double, double, double, double> ColorClassifier::compute_percentage(const 
 			acc_p_yellow = acc_p_yellow + p_yellow[idx];
 		}
 	}
-	acc_p_none = acc_p_none* alpha;
 	return make_tuple(acc_p_none, acc_p_blue, acc_p_red, acc_p_yellow);
 }
 
 bool ColorClassifier::is_blue(const cv::Mat& patch, float alpha) {
-	tuple<double, double, double, double> acc_p_tuple = compute_percentage(patch, alpha);
+	tuple<double, double, double, double> acc_p_tuple = compute_percentage(patch);
 	double acc_p_none = std::get<0>(acc_p_tuple);
 	double acc_p_blue = std::get<1>(acc_p_tuple);
 	double acc_p_red = std::get<2>(acc_p_tuple);
 	double acc_p_yellow = std::get<3>(acc_p_tuple);
-	return (acc_p_blue > acc_p_none) && (acc_p_blue >= acc_p_red) && (acc_p_blue >= acc_p_yellow);
+	return (acc_p_blue > acc_p_none* alpha) && (acc_p_blue >= acc_p_red) && (acc_p_blue >= acc_p_yellow);
 }
 
 bool ColorClassifier::is_red(const cv::Mat& patch, float alpha) {
-	tuple<double, double, double, double> acc_p_tuple = compute_percentage(patch, alpha);
+	tuple<double, double, double, double> acc_p_tuple = compute_percentage(patch);
 	double acc_p_none = std::get<0>(acc_p_tuple);
 	double acc_p_blue = std::get<1>(acc_p_tuple);
 	double acc_p_red = std::get<2>(acc_p_tuple);
 	double acc_p_yellow = std::get<3>(acc_p_tuple);
-	return (acc_p_red > acc_p_none) && (acc_p_red >= acc_p_red) && (acc_p_red >= acc_p_yellow);
+	return (acc_p_red > acc_p_none* alpha) && (acc_p_red >= acc_p_red) && (acc_p_red >= acc_p_yellow);
 }
 
 bool ColorClassifier::is_yellow(const cv::Mat& patch, float alpha) {
-	tuple<double, double, double, double> acc_p_tuple = compute_percentage(patch, alpha);
+	tuple<double, double, double, double> acc_p_tuple = compute_percentage(patch);
 	double acc_p_none = std::get<0>(acc_p_tuple);
 	double acc_p_blue = std::get<1>(acc_p_tuple);
 	double acc_p_red = std::get<2>(acc_p_tuple);
 	double acc_p_yellow = std::get<3>(acc_p_tuple);
-	return (acc_p_yellow > acc_p_none) && (acc_p_yellow >= acc_p_blue) && (acc_p_yellow >= acc_p_red);
-}
-
-ColorClassifier::ColorClassifier(const vector<string>& training_files)
-{
-	// Currently not supported.
+	return (acc_p_yellow > acc_p_none* alpha) && (acc_p_yellow >= acc_p_blue) && (acc_p_yellow >= acc_p_red);
 }
 
 ColorClassifier::~ColorClassifier()
