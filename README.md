@@ -2,12 +2,12 @@
 #######################   Overview   ################################## 
 #######################################################################
 
-We created a dataset containing roughly 80 labelled pictures. A neural network was trained to predict the color for patches of the image but we found that
-The neural network can not handle different patch sizes and 
+We created a dataset containing roughly 80 labelled pictures. A neural network was trained to predict the color for tiles of the image but we found that
+The neural network can not handle different tile sizes and 
 The accuracy of the neural network only reaches 80 to 85%. This can be solved by
 Using a larger dataset
 Using transfer learning from similar datasets. 
-Because of those limitations and an approaching deadline we evaluated a more classical approach that uses a statistical analysis. This approach was implemented in Python and then translated into C++. The code was tested and the accuracy surpassed 90%. The runtime of the final algorithm is below 0.1 seconds for a 100 by 100 pixel patch.
+Because of those limitations and an approaching deadline we evaluated a more classical approach that uses a statistical analysis. This approach was implemented in Python and then translated into C++. The code was tested and the accuracy surpassed 90%. The runtime of the final algorithm is below 0.1 seconds for a 100 by 100 pixel tile.
 
 We will now describe the components in more detail.
 
@@ -48,10 +48,10 @@ The classifier has the following interface:
 public:
 	ColorClassifier(const std::string& load_from_object);
 	inline int compute_idx(const cv::Vec3b & pixel);
-	std::tuple<double, double, double, double> compute_percentage(const cv::Mat & patch);
-	bool is_blue(const cv::Mat & patch, float alpha);
-	bool is_red(const cv::Mat & patch, float alpha);
-	bool is_yellow(const cv::Mat & patch, float alpha);
+	std::tuple<double, double, double, double> compute_percentage(const cv::Mat & tile);
+	bool is_blue(const cv::Mat & tile, float alpha);
+	bool is_red(const cv::Mat & tile, float alpha);
+	bool is_yellow(const cv::Mat & tile, float alpha);
 	~ColorClassifier();
 private:
 	std::vector<float> p_none;
@@ -63,10 +63,10 @@ private:
 
 It can be constructed by providing the path to the json file. Please make sure this is the correct path, otherwise the classifier might be initialized incorrectly. 
 
-There are 3 functions is_blue, is_red, is_yellow that can be used to classify a patch. Alpha is a parameter that can be fine tuned. A lower value will generate more false positives a higher value will generate more false negatives. A recommended value is 0.18 (slightly more false positives). 
+There are 3 functions is_blue, is_red, is_yellow that can be used to classify a tile. Alpha is a parameter that can be fine tuned. A lower value will generate more false positives a higher value will generate more false negatives. A recommended value is 0.18 (slightly more false positives). 
 
 The first parameter is an openCV Matrix in the RGB format. Make sure the color format is correct because openCV loads image files in the BGR format. In that case you need to transform the file first with cvtColor(image, image, COLOR_BGR2RGB); 
-The Utils.cpp file contains quite a few examples how to read and process a file. If you only want to classify a patch, select the patch like this image.rowRange(i, to_i).colRange(j, to_j) and give the resulting sub matrix to the function.
+The Utils.cpp file contains quite a few examples how to read and process a file. If you only want to classify a tile, select the tile like this image.rowRange(i, to_i).colRange(j, to_j) and give the resulting sub matrix to the function.
 
 The library also includes a compute_percentage function that will return a tuple containing 4 values. These are the raw (not normalized) percentages for none, blue, red and yellow respectively. You can see an example use case of that function inside the is_blue/red/yellow function. 
 

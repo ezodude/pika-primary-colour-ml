@@ -10,11 +10,11 @@ using namespace cv;
 using namespace std;
 
 
-vector<int> count_occurences(const Mat& patch) {
+vector<int> count_occurences(const Mat& tile) {
 	vector<int> result(4, 0);
-	for (int i = 0; i < patch.rows; ++i) {
-		const unsigned char* pixel = patch.ptr<unsigned char>(i);
-		for (int j = 0; j < patch.cols; ++j) {
+	for (int i = 0; i < tile.rows; ++i) {
+		const unsigned char* pixel = tile.ptr<unsigned char>(i);
+		for (int j = 0; j < tile.cols; ++j) {
 			result[pixel[j]]++;
 		}
 	}
@@ -66,10 +66,10 @@ int main()
 			for (int j = 0; j < w - 1; j = j + chunk_size) {
 				int to_i = min(i + chunk_size, h - 1);
 				int to_j = min(j + chunk_size, w - 1);
-				const Mat& patch = sample.first.rowRange(i, to_i).colRange(j, to_j);
-				bool blue = cc.is_blue(patch, 0.18);
-				bool red = cc.is_red(patch, 0.18);
-				bool yellow = cc.is_yellow(patch, 0.18);
+				const Mat& tile = sample.first.rowRange(i, to_i).colRange(j, to_j);
+				bool blue = cc.is_blue(tile, 0.18);
+				bool red = cc.is_red(tile, 0.18);
+				bool yellow = cc.is_yellow(tile, 0.18);
 
 				// Report our findings for visual feedback.
 				int color = 0;
