@@ -1,16 +1,11 @@
-#include "ColorClassifier.h"
 #include <opencv2/core/core.hpp>
-#include "Utils.h"
-#include <iostream>
 #include <vector>
 #include <string>
 #include <fstream>
-#include <sstream>
-#include <iterator>
-#include <Windows.h>
 #include <numeric>
 #include <tuple>
 
+#include "ColorClassifier.h"
 
 using namespace std;
 
