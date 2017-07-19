@@ -44,7 +44,7 @@ ColorClassifier::ColorClassifier(const string& load_from_object)
 
 	}
 	else {
-		throw exception("Could not open file!");
+		throw logic_error("Could not open file!");
 	}
 
 	// From the parsed_content we have to create maps for every color
@@ -116,7 +116,7 @@ bool ColorClassifier::is_red(const cv::Mat& tile, float alpha) {
 	double acc_p_blue = std::get<1>(acc_p_tuple);
 	double acc_p_red = std::get<2>(acc_p_tuple);
 	double acc_p_yellow = std::get<3>(acc_p_tuple);
-	return (acc_p_red > acc_p_none* alpha) && (acc_p_red >= acc_p_red) && (acc_p_red >= acc_p_yellow);
+	return (acc_p_red > acc_p_none* alpha) && (acc_p_red >= acc_p_blue) && (acc_p_red >= acc_p_yellow);
 }
 
 bool ColorClassifier::is_yellow(const cv::Mat& tile, float alpha) {
