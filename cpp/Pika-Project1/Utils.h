@@ -16,5 +16,6 @@ public:
 	static bool string_ends_with(std::string const & value, std::string const & ending);
 	static std::pair<cv::Mat, cv::Mat> read_complete_file(const std::string & folder, const std::string & file_name);
 	static cv::Mat encode_label_image(const cv::Mat & label_image);
+	static std::vector<std::vector<std::vector<unsigned char>>> mat2vec(const cv::Mat & input);
 };
 

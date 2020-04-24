@@ -67,9 +67,9 @@ int main()
 				int to_i = min(i + chunk_size, h - 1);
 				int to_j = min(j + chunk_size, w - 1);
 				const Mat& tile = sample.first.rowRange(i, to_i).colRange(j, to_j);
-				bool blue = cc.is_blue(tile, 0.18);
-				bool red = cc.is_red(tile, 0.18);
-				bool yellow = cc.is_yellow(tile, 0.18);
+				bool blue = cc.is_blue(Utils::mat2vec(tile), 0.18);
+				bool red = cc.is_red(Utils::mat2vec(tile), 0.18);
+				bool yellow = cc.is_yellow(Utils::mat2vec(tile), 0.18);
 
 				// Report our findings for visual feedback.
 				int color = 0;

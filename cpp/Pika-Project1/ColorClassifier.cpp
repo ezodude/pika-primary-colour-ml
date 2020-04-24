@@ -1,9 +1,9 @@
-#include <opencv2/core/core.hpp>
 #include <vector>
 #include <string>
 #include <fstream>
 #include <numeric>
 #include <tuple>
+#include <assert.h>
 
 #include "ColorClassifier.h"
 
@@ -69,7 +69,7 @@ ColorClassifier::ColorClassifier(const string& load_from_object)
 
 }
 
-inline int ColorClassifier::compute_idx(const cv::Vec3b& pixel) {
+inline int ColorClassifier::compute_idx(const vector<unsigned char>& pixel) {
 	// We assume that a pixel stores the color in an RGB format. This
 	// allows up to compute the correct location for the lookup. 
 	// Mathematically we use first rescale the pixels to fit into our smaller
@@ -82,16 +82,17 @@ inline int ColorClassifier::compute_idx(const cv::Vec3b& pixel) {
 }
 
 
-tuple<double, double, double, double> ColorClassifier::compute_percentage(const cv::Mat& tile) {
+tuple<double, double, double, double> ColorClassifier::compute_percentage(const vector<vector<vector<unsigned char>>>& tile) {
 	double acc_p_none = 0;
 	double acc_p_blue = 0;
 	double acc_p_red = 0;
 	double acc_p_yellow = 0;
 
-	for (int i = 0; i < tile.rows; ++i) {
-		const cv::Vec3b* pixel = tile.ptr<cv::Vec3b>(i);
-		for (int j = 0; j < tile.cols; ++j) {
-			int idx = compute_idx(pixel[j]);
+	assert(tile.size() > 0);
+	assert(tile[0].size() > 0);
+	for (int i = 0; i < tile.size(); ++i) {
+		for (int j = 0; j < tile[i].size(); ++j) {
+			int idx = compute_idx(tile[i][j]);
 			acc_p_none = acc_p_none + p_none[idx];
 			acc_p_blue = acc_p_blue + p_blue[idx];
 			acc_p_red = acc_p_red + p_red[idx];
@@ -101,7 +102,7 @@ tuple<double, double, double, double> ColorClassifier::compute_percentage(const 
 	return make_tuple(acc_p_none, acc_p_blue, acc_p_red, acc_p_yellow);
 }
 
-bool ColorClassifier::is_blue(const cv::Mat& tile, float alpha) {
+bool ColorClassifier::is_blue(const vector<vector<vector<unsigned char>>>& tile, float alpha) {
 	tuple<double, double, double, double> acc_p_tuple = compute_percentage(tile);
 	double acc_p_none = std::get<0>(acc_p_tuple);
 	double acc_p_blue = std::get<1>(acc_p_tuple);
@@ -110,7 +111,7 @@ bool ColorClassifier::is_blue(const cv::Mat& tile, float alpha) {
 	return (acc_p_blue > acc_p_none* alpha) && (acc_p_blue >= acc_p_red) && (acc_p_blue >= acc_p_yellow);
 }
 
-bool ColorClassifier::is_red(const cv::Mat& tile, float alpha) {
+bool ColorClassifier::is_red(const vector<vector<vector<unsigned char>>>& tile, float alpha) {
 	tuple<double, double, double, double> acc_p_tuple = compute_percentage(tile);
 	double acc_p_none = std::get<0>(acc_p_tuple);
 	double acc_p_blue = std::get<1>(acc_p_tuple);
@@ -119,7 +120,7 @@ bool ColorClassifier::is_red(const cv::Mat& tile, float alpha) {
 	return (acc_p_red > acc_p_none* alpha) && (acc_p_red >= acc_p_blue) && (acc_p_red >= acc_p_yellow);
 }
 
-bool ColorClassifier::is_yellow(const cv::Mat& tile, float alpha) {
+bool ColorClassifier::is_yellow(const vector<vector<vector<unsigned char>>>& tile, float alpha) {
 	tuple<double, double, double, double> acc_p_tuple = compute_percentage(tile);
 	double acc_p_none = std::get<0>(acc_p_tuple);
 	double acc_p_blue = std::get<1>(acc_p_tuple);

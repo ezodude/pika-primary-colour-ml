@@ -85,7 +85,8 @@ pair<Mat, Mat> Utils::read_complete_file(const string& folder, const string& fil
 	double scaling_factor = 0;
 	if (h > w) {
 		scaling_factor = 1280 / float(w);
-	} else {
+	}
+	else {
 		scaling_factor = 1280 / float(h);
 	}
 
@@ -138,6 +139,22 @@ Mat Utils::encode_label_image(const Mat& label_image) {
 	return labels;
 }
 
+vector<vector<vector<unsigned char>>> Utils::mat2vec(const Mat & input) {
+	vector<vector<vector<unsigned char>>> result;
+	for (int i = 0; i < input.rows; ++i) {
+		const cv::Vec3b* pixel = input.ptr<cv::Vec3b>(i);
+		vector<vector<unsigned char>> new_line;
+		for (int j = 0; j < input.cols; ++j) {
+			vector<unsigned char> pixel_v;
+			for (int k = 0; k < 3; ++k) {
+				pixel_v.push_back(pixel[j][k]);
+			}
+			new_line.push_back(pixel_v);
+		}
+		result.push_back(new_line);
+	}
+	return result;
+}
 
 Utils::~Utils()
 {
